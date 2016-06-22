@@ -5,9 +5,17 @@ import java.nio.channels.SocketChannel;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public abstract class AbstractForwarder {
-	
+	protected Logger logger = LoggerFactory.getLogger(this.getClass());
 	protected ByteBuffer dst;
+	/**
+	 * forwarder服务器host ip或域名
+	 */
+	protected String forwarderHostName = "127.0.0.1";
+
 	/**
 	 * 链接至forwarder服务器的channel
 	 */
@@ -44,6 +52,30 @@ public abstract class AbstractForwarder {
 
 	public AbstractForwarder(SocketChannel forwardServerChannel) {
 		this.forwardServerChannel = forwardServerChannel;
+	}
+
+	public String getTargetServerHostName() {
+		return targetServerHostName;
+	}
+
+	public void setTargetServerHostName(String targetServerHostName) {
+		this.targetServerHostName = targetServerHostName;
+	}
+
+	public int getTargetServerPort() {
+		return targetServerPort;
+	}
+
+	public void setTargetServerPort(int targetServerPort) {
+		this.targetServerPort = targetServerPort;
+	}
+
+	public int getForwarderPort() {
+		return forwarderPort;
+	}
+
+	public void setForwarderPort(int forwarderPort) {
+		this.forwarderPort = forwarderPort;
 	}
 
 }

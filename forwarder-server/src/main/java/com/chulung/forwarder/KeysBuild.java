@@ -7,14 +7,23 @@ public class KeysBuild {
 
 	public static byte[] getBytesKeys() {
 		a++;
-		if (a >= 127) {
-			b++;
+		if (a >= 255) {
 			a = 0;
+			b++;
 		}
-		if (b >= 127) {
-			c++;
+		if (b >= 255) {
 			b = 0;
+			c++;
 		}
 		return new byte[] { a, b, c };
+	}
+
+	public static  String toString(byte[] b) {
+		String s = "";
+		for (byte c : b) {
+			s += c;
+		}
+		assert b.length==3;
+		return s;
 	}
 }
