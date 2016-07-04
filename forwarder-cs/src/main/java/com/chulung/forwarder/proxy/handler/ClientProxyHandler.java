@@ -21,11 +21,11 @@ public class ClientProxyHandler extends AbstractProxyHandler {
 		if (msg instanceof DataWrapper) {
 			this.forwarderServerCtx = ctx;
 			DataWrapper dataWrapper = (DataWrapper) msg;
-			if (dataWrapper.getDataCode() == DataType.CLIENT_CONNECTING) {
+			if (dataWrapper.getDataType() == DataType.CLIENT_CONNECTING) {
 				new LocalServer().start();
-			} else if (dataWrapper.getDataCode() == DataType.DATA) {
+			} else if (dataWrapper.getDataType() == DataType.DATA) {
 				this.localAppCtx.write(dataWrapper.getData());
-			} else if (dataWrapper.getDataCode() == DataType.SERVER_PROXY_NOT_FOUNED) {
+			} else if (dataWrapper.getDataType() == DataType.SERVER_PROXY_NOT_FOUNED) {
 				LOGGER.error("服务端代理未找到");
 				forwarderServerCtx.close();
 			}

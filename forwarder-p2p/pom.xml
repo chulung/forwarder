@@ -2,8 +2,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.chulung</groupId>
-	<artifactId>forwarder-cs</artifactId>
+	<artifactId>forwarder-p2p</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<name>forwarder-p2p</name>
+	<description>内网穿透p2p实现</description>
 	<properties>
 		<org.slf4j.version>1.7.12</org.slf4j.version>
 	</properties>
@@ -40,7 +42,7 @@
 		</dependency>
 	</dependencies>
 	<build>
-		<finalName>forwarder-cs</finalName>
+		<finalName>forwarder-p2p</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -66,9 +68,9 @@
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
-					<descriptors>
-						<descriptor>src/main/assembly/assembly.xml</descriptor>
-					</descriptors>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
 					<archive>
 						<manifest>
 							<mainClass>com.chulung.forwarder.server.ForwarderServer</mainClass>

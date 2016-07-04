@@ -1,7 +1,6 @@
 package com.chulung.forwarder.wrapper;
 
 import java.io.Serializable;
-import java.util.Arrays;
 
 import com.chulung.forwarder.common.ClientType;
 import com.chulung.forwarder.common.DataType;
@@ -41,6 +40,12 @@ public class DataWrapper implements Serializable {
 		this.data = src;
 	}
 
+	public DataWrapper(ChannelId clientId, ByteBuf data) {
+		this.clientId = clientId;
+		this.data = data;
+		this.dataType = DataType.DATA;
+	}
+
 	@Override
 	public String toString() {
 		return "DataWrapper [clientId=" + clientId + ", clientType=" + clientType + ", dataType=" + dataType + ", data="
@@ -55,12 +60,12 @@ public class DataWrapper implements Serializable {
 		this.clientType = clientType;
 	}
 
-	public DataType getDataCode() {
+	public DataType getDataType() {
 		return dataType;
 	}
 
-	public void setDataCode(DataType dataCode) {
-		this.dataType = dataCode;
+	public void setDataType(DataType dataType) {
+		this.dataType = dataType;
 	}
 
 	public ByteBuf getData() {

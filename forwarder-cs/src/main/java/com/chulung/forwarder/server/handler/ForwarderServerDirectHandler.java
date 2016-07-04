@@ -6,22 +6,22 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.chulung.forwarder.common.ClientType;
 import com.chulung.forwarder.common.DataType;
 import com.chulung.forwarder.wrapper.DataWrapper;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelId;
 import io.netty.channel.SimpleChannelInboundHandler;
 
 /**
- * 转发服务端handler
+ * 远程客户端应用直连转发服务端handler
  * 
  * @author ChuKai
  *
  */
-public class ForwarderServerHandler extends SimpleChannelInboundHandler<DataWrapper> {
-	private static final Logger LOGGER = LoggerFactory.getLogger(ForwarderServerHandler.class);
+public class ForwarderServerDirectHandler extends SimpleChannelInboundHandler<Object> {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ForwarderServerDirectHandler.class);
 	private ChannelHandlerContext serverProxyCtx;
 	private Map<ChannelId, ChannelHandlerContext> clientProxyCtxMap = new HashMap<>();
 
@@ -38,7 +38,7 @@ public class ForwarderServerHandler extends SimpleChannelInboundHandler<DataWrap
 			LOGGER.error("客户端代理通道异常，通知服务端代理", cause);
 			// 客户端代理异常则通知服务器代理
 			this.clientProxyCtxMap.remove(ctx.channel().id());
-			if (serverProxyCtx!=null) {
+			if (serverProxyCtx != null) {
 				serverProxyCtx.writeAndFlush(new DataWrapper(DataType.CLIENT_CLOSE, ctx.channel().id()));
 			}
 		}
@@ -46,14 +46,16 @@ public class ForwarderServerHandler extends SimpleChannelInboundHandler<DataWrap
 	}
 
 	@Override
-	protected void channelRead0(ChannelHandlerContext ctx, DataWrapper msg) throws Exception {
-		if (msg == null || msg.getClientType() == null) {
+	protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
+		if (msg == null) {
 			ctx.close();
+			return;
 			// 远程客户端代理数据
-		} else if (msg.getClientType() == ClientType.ClientProxy) {
-			ClientProxyRead(ctx, msg);
-		} else if (msg.getClientType() == ClientType.ServerProxy) {
-			ServerProxyRead(ctx, msg);
+		}
+		if (msg instanceof ByteBuf) {
+			ClientProxyRead(ctx, (ByteBuf) msg);
+		} else if (msg instanceof DataWrapper) {
+			ServerProxyRead(ctx, (DataWrapper) msg);
 		}
 	}
 
@@ -89,17 +91,14 @@ public class ForwarderServerHandler extends SimpleChannelInboundHandler<DataWrap
 	 * @param ctx
 	 * @param msg
 	 */
-	private void ClientProxyRead(ChannelHandlerContext ctx, DataWrapper msg) {
+	private void ClientProxyRead(ChannelHandlerContext ctx, ByteBuf msg) {
 		if (this.serverProxyCtx == null) {
 			LOGGER.error("服务端代理不存在");
 			// 服务端代理不存在
 			ctx.writeAndFlush(new DataWrapper(DataType.SERVER_PROXY_NOT_FOUNED));
-		} else if (msg.getDataType() == DataType.CLIENT_CONNECTING) {
-			LOGGER.info("客户端代理已连接 addr={}", ctx.channel().remoteAddress());
+		} else {
 			this.clientProxyCtxMap.put(ctx.channel().id(), ctx);
-		} else if (msg.getDataType() == DataType.DATA) {
-			msg.setClientId(ctx.channel().id());
-			this.serverProxyCtx.writeAndFlush(msg);
+			this.serverProxyCtx.writeAndFlush(new DataWrapper(ctx.channel().id(), msg));
 		}
 	}
 

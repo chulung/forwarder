@@ -1,7 +1,6 @@
 package com.chulung.forwarder.common;
 
 import java.awt.geom.IllegalPathStateException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.Properties;
@@ -38,7 +37,8 @@ public class Config {
 	private Config() {
 		Properties properties = new Properties();
 		try {
-			properties.load(new FileReader("src/main/resources/config.properties"));
+			properties.load(this.getClass().getResourceAsStream("/config.properties"));
+//			properties.load(new FileReader(this.getClass().getResource("/")+"config.properties"));
 			this.forwarderHost = properties.getProperty("forwarderHost");
 			this.forwaderPort = Integer.parseInt(properties.getProperty("forwaderPort"));
 			this.forwarderAddress = new InetSocketAddress(forwarderHost, forwaderPort);
