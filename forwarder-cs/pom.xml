@@ -1,0 +1,64 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.chulung</groupId>
+	<artifactId>forwarder-server</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<properties>
+		<org.slf4j.version>1.7.12</org.slf4j.version>
+	</properties>
+	<dependencies>
+		<!-- https://mvnrepository.com/artifact/org.jxta.platform/jxta <dependency> 
+			<groupId>org.jxta.platform</groupId> <artifactId>jxta</artifactId> <version>2.3.6</version> 
+			</dependency> -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<version>${org.slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${org.slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>1.1.2</version>
+		</dependency>
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-all</artifactId> <!-- Use 'netty-all' for 4.0 or above -->
+			<version>4.1.2.Final</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.9</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+	<build>
+		<finalName>forward</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.0</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-jar-plugin</artifactId> 
+				<configuration> <archive> <manifest> <mainClass>com.chulung.forwarder.agent.ForwarderMain</mainClass> 
+				<addClasspath>true</addClasspath> </manifest> </archive> </configuration> 
+				</plugin> <plugin> <artifactId>maven-assembly-plugin</artifactId> <configuration> 
+				<descriptorRefs> <descriptorRef>jar-with-dependencies</descriptorRef> </descriptorRefs> 
+				<archive> <manifest> <mainClass></mainClass> </manifest> </archive> </configuration> 
+				<executions> <execution> <id>make-assembly</id> <phase>package</phase> <goals> 
+				<goal>single</goal> </goals> </execution> </executions> </plugin> -->
+		</plugins>
+	</build>
+</project>
