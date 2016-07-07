@@ -30,6 +30,8 @@ public class Config {
 	/** 客户端代理服务端口 */
 	private int clientProxyPort;
 
+	private long localAppOutTime;
+
 	public static Config getConfig() {
 		return CONFIG;
 	}
@@ -38,7 +40,6 @@ public class Config {
 		Properties properties = new Properties();
 		try {
 			properties.load(this.getClass().getResourceAsStream("/config.properties"));
-//			properties.load(new FileReader(this.getClass().getResource("/")+"config.properties"));
 			this.forwarderHost = properties.getProperty("forwarderHost");
 			this.forwaderPort = Integer.parseInt(properties.getProperty("forwaderPort"));
 			this.forwarderAddress = new InetSocketAddress(forwarderHost, forwaderPort);
@@ -46,6 +47,7 @@ public class Config {
 			this.targetPort = Integer.parseInt(properties.getProperty("targetPort"));
 			this.clientProxyPort = Integer.parseInt(properties.getProperty("clientProxyPort"));
 			this.setLocalServerAddress(new InetSocketAddress(targetHost, targetPort));
+			this.setLocalAppOutTime(Long.parseLong(properties.getProperty("localAppOutTime")));
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw new IllegalPathStateException("Can't load config.properties!");
@@ -106,6 +108,14 @@ public class Config {
 
 	public void setLocalServerAddress(InetSocketAddress localServerAddress) {
 		this.localServerAddress = localServerAddress;
+	}
+
+	public long getLocalAppOutTime() {
+		return localAppOutTime;
+	}
+
+	public void setLocalAppOutTime(long localAppOutTime) {
+		this.localAppOutTime = localAppOutTime;
 	}
 
 }

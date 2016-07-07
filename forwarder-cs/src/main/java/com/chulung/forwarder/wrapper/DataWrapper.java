@@ -6,50 +6,22 @@ import com.chulung.forwarder.common.ClientType;
 import com.chulung.forwarder.common.DataType;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelId;
+import io.netty.buffer.ByteBufUtil;
+import io.netty.buffer.Unpooled;
 
 public class DataWrapper implements Serializable {
 	private static final long serialVersionUID = 1178533155322062994L;
-	private ChannelId clientId;
+	private long createTime =System.currentTimeMillis();
+	private String clientId;
 	private ClientType clientType;
 	private DataType dataType;
-	private ByteBuf data;
+	private byte[] data;
 	private String msg;
-
-	public DataWrapper() {
-	}
-
-	public DataWrapper(ClientType clientType, com.chulung.forwarder.common.DataType dataType) {
-		super();
-		this.clientType = clientType;
-		this.dataType = dataType;
-	}
-
-	public DataWrapper(DataType dataType) {
-		super();
-		this.dataType = dataType;
-	}
-
-	public DataWrapper(DataType code, ChannelId clientId) {
-		super();
-		this.dataType = code;
-		this.clientId = clientId;
-	}
-
-	public DataWrapper(ByteBuf src) {
-		this.data = src;
-	}
-
-	public DataWrapper(ChannelId clientId, ByteBuf data) {
-		this.clientId = clientId;
-		this.data = data;
-		this.dataType = DataType.DATA;
-	}
 
 	@Override
 	public String toString() {
 		return "DataWrapper [clientId=" + clientId + ", clientType=" + clientType + ", dataType=" + dataType + ", data="
-				+ data + ", msg=" + msg + "]";
+				+ (data == null ? null : data) + ", msg=" + msg + "]";
 	}
 
 	public ClientType getClientType() {
@@ -69,19 +41,19 @@ public class DataWrapper implements Serializable {
 	}
 
 	public ByteBuf getData() {
-		return data;
+		return Unpooled.wrappedBuffer(data);
 	}
 
-	public ChannelId getClientId() {
+	public String getClientId() {
 		return clientId;
 	}
 
-	public void setClientId(ChannelId clientId) {
+	public void setClientId(String clientId) {
 		this.clientId = clientId;
 	}
 
-	public void setSrc(ByteBuf data) {
-		this.data = data;
+	public void setData(ByteBuf data) {
+		this.data = ByteBufUtil.getBytes(data);
 	}
 
 	public String getMsg() {
@@ -90,6 +62,14 @@ public class DataWrapper implements Serializable {
 
 	public void setMsg(String msg) {
 		this.msg = msg;
+	}
+
+	public long getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(long createTime) {
+		this.createTime = createTime;
 	}
 
 }

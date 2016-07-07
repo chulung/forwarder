@@ -50,7 +50,7 @@
 		TRACE < DEBUG < INFO < WARN < ERROR additivity：作用在于children-logger是否使用 rootLogger配置的appender进行输出，false：表示只用当前logger的appender-ref，true：表示当前logger的appender-ref和rootLogger的appender-ref都有效 -->
 	
 	<!-- root与logger是父子关系，没有特别定义则默认为root，任何一个类只会和一个logger对应， 要么是定义的logger，要么是root，判断的关键在于找到这个logger，然后判断这个logger的appender和level。 -->
-	<root level="info">
+	<root level="debug">
 		<appender-ref ref="stdout" />
 		<appender-ref ref="appLogAppender" />
 	</root>

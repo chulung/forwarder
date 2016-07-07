@@ -12,5 +12,5 @@ public enum DataType {
 	/** 服务器代理异常 */
 	Server_PROXY_ERROR,
 	/** 服务端代理不存在 */
-	SERVER_PROXY_NOT_FOUNED
+	SERVER_PROXY_NOT_FOUNED,
 }
