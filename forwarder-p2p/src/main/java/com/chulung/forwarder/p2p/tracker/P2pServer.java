@@ -1,6 +1,6 @@
-package com.chulung.forwarder.p2p.server;
+package com.chulung.forwarder.p2p.tracker;
 
-import com.chulung.forwarder.p2p.server.handler.P2pServerHandler;
+import com.chulung.forwarder.p2p.tracker.handler.P2pServerHandler;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelOption;
