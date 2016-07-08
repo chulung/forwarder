@@ -50,7 +50,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>com.chulung.forwarder.server.ForwarderServer</mainClass>
+							<mainClass>com.chulung.forwarder.p2p.tracker.P2pServer</mainClass>
 							<addClasspath>true</addClasspath>
 						</manifest>
 					</archive>
@@ -68,12 +68,12 @@
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
+					<descriptors>
+						<descriptor>src/main/assembly/assembly.xml</descriptor>
+					</descriptors>
 					<archive>
 						<manifest>
-							<mainClass>com.chulung.forwarder.server.ForwarderServer</mainClass>
+							<mainClass>com.chulung.forwarder.p2p.tracker.P2pServer</mainClass>
 						</manifest>
 					</archive>
 				</configuration>

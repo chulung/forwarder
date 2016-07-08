@@ -1,0 +1,1 @@
+java -jar lib/forwarder-p2p-0.0.1-SNAPSHOT.jar

@@ -17,7 +17,7 @@ public class P2pServer {
 			b.group(group).channel(NioDatagramChannel.class).option(ChannelOption.SO_BROADCAST, true)
 					.handler(new P2pServerHandler());
 
-			b.bind(7402).sync().channel().closeFuture().await();
+			b.bind(7777).sync().channel().closeFuture().await();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
