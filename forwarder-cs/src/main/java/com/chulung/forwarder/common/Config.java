@@ -3,6 +3,8 @@ package com.chulung.forwarder.common;
 import java.awt.geom.IllegalPathStateException;
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 public class Config {
@@ -11,7 +13,7 @@ public class Config {
 	/**
 	 * forwarder服务器host ip或域名
 	 */
-	private String forwarderHost = "127.0.0.1";
+	private String forwarderHost ;
 	private InetSocketAddress forwarderAddress;
 
 	/**
@@ -19,18 +21,12 @@ public class Config {
 	 */
 	private int forwaderPort;
 	/**
-	 * 目标服务器host 如果服务器在本机，即为127.0.0.1
-	 */
-	private String targetHost;
-	/**
 	 * 目标服务器端口
 	 */
-	private int targetPort;
-	private InetSocketAddress localServerAddress;
+	private int[] targetPort;
 	/** 客户端代理服务端口 */
-	private int clientProxyPort;
-
-	private long localAppOutTime;
+	private int[] clientProxyPort;
+	private Map<Integer, Integer> portMap = new HashMap<>();
 
 	public static Config getConfig() {
 		return CONFIG;
@@ -43,11 +39,21 @@ public class Config {
 			this.forwarderHost = properties.getProperty("forwarderHost");
 			this.forwaderPort = Integer.parseInt(properties.getProperty("forwaderPort"));
 			this.forwarderAddress = new InetSocketAddress(forwarderHost, forwaderPort);
-			this.targetHost = properties.getProperty("targetHost");
-			this.targetPort = Integer.parseInt(properties.getProperty("targetPort"));
-			this.clientProxyPort = Integer.parseInt(properties.getProperty("clientProxyPort"));
-			this.setLocalServerAddress(new InetSocketAddress(targetHost, targetPort));
-			this.setLocalAppOutTime(Long.parseLong(properties.getProperty("localAppOutTime")));
+			String[] targetPortStr = properties.getProperty("targetPort").split(",");
+			String[] clientProxyPortStr = properties.getProperty("clientProxyPort").split(",");
+			if (targetPortStr.length != clientProxyPortStr.length) {
+				throw new IllegalArgumentException("targetPort,clientProxyPort 端口数不匹配");
+			}
+			this.targetPort = new int[targetPortStr.length];
+			this.clientProxyPort = new int[targetPortStr.length];
+			for (int i = 0; i < clientProxyPortStr.length; i++) {
+				clientProxyPort[i] = Integer.parseInt(clientProxyPortStr[i]);
+			}
+			for (int i = 0; i < targetPortStr.length; i++) {
+				targetPort[i] = Integer.parseInt(targetPortStr[i]);
+				portMap.put(clientProxyPort[i], targetPort[i]);
+			}
+
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw new IllegalPathStateException("Can't load config.properties!");
@@ -70,19 +76,11 @@ public class Config {
 		this.forwarderHost = forwarderHost;
 	}
 
-	public String getTargetHost() {
-		return targetHost;
-	}
-
-	public void setTargetHost(String targetHost) {
-		this.targetHost = targetHost;
-	}
-
-	public int getTargetPort() {
+	public int[] getTargetPort() {
 		return targetPort;
 	}
 
-	public void setTargetPort(int targetPort) {
+	public void setTargetPort(int[] targetPort) {
 		this.targetPort = targetPort;
 	}
 
@@ -94,28 +92,15 @@ public class Config {
 		this.forwaderPort = forwaderPort;
 	}
 
-	public int getClientProxyPort() {
+	public int[] getClientProxyPort() {
 		return clientProxyPort;
 	}
 
-	public void setClientProxyPort(int clientProxyPort) {
+	public void setClientProxyPort(int[] clientProxyPort) {
 		this.clientProxyPort = clientProxyPort;
 	}
 
-	public InetSocketAddress getLocalServerAddress() {
-		return localServerAddress;
+	public int getMappedPort(int clientPort) {
+		return this.portMap.get(clientPort);
 	}
-
-	public void setLocalServerAddress(InetSocketAddress localServerAddress) {
-		this.localServerAddress = localServerAddress;
-	}
-
-	public long getLocalAppOutTime() {
-		return localAppOutTime;
-	}
-
-	public void setLocalAppOutTime(long localAppOutTime) {
-		this.localAppOutTime = localAppOutTime;
-	}
-
 }

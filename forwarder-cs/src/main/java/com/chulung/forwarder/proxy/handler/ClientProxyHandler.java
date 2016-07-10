@@ -1,25 +1,25 @@
 package com.chulung.forwarder.proxy.handler;
 
-import com.chulung.forwarder.common.ClientType;
-import com.chulung.forwarder.common.Config;
-import com.chulung.forwarder.common.DataType;
-import com.chulung.forwarder.server.AbstractServer;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import com.chulung.forwarder.common.StatusCode;
+import com.chulung.forwarder.common.Util;
+import com.chulung.forwarder.proxy.local.LocalAppProxy;
 import com.chulung.forwarder.wrapper.DataWrapper;
-import com.chulung.forwarder.wrapper.DataWrapperBuilder;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInitializer;
 
 @Sharable
 public class ClientProxyHandler extends AbstractProxyHandler {
 
-	private ChannelHandlerContext localAppCtx;
-	private ClientProxyHandler handler;
-	private long lastSendDataTime = 0;
-	private long localAppOutTime = Config.getConfig().getLocalAppOutTime();
+	public ClientProxyHandler() {
+		super(StatusCode.C_CONNECTING);
+	}
+
+	private Map<Integer, ChannelHandlerContext> localAppCtxMap = new ConcurrentHashMap<>();
 
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
@@ -30,62 +30,45 @@ public class ClientProxyHandler extends AbstractProxyHandler {
 	protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
 		if (msg instanceof DataWrapper) {
 			DataWrapper dataWrapper = (DataWrapper) msg;
-			if (dataWrapper.getDataType() == DataType.CLIENT_CONNECTING) {
-				handler = this;
-				new LocalServer().start();
-			} else if (dataWrapper.getDataType() == DataType.DATA) {
-				if (lastSendDataTime != 0 && (System.currentTimeMillis() - lastSendDataTime) > localAppOutTime) {
-					LOGGER.error("本地应用已断开");
-					this.localAppCtx.close();
-					this.forwarderServerCtx.close();
-					return;
+			if (dataWrapper.getStatusCode() == StatusCode.C_CONNECTING) {
+				new LocalAppProxy(this).start();
+			} else if (dataWrapper.getStatusCode() == StatusCode.S_DATA) {
+				ChannelHandlerContext localAppCtx = this.localAppCtxMap.get(((DataWrapper) msg).getClientProxyPort());
+				if (localAppCtx != null && localAppCtx.channel().isActive()) {
+					localAppCtx.writeAndFlush(dataWrapper.getData());
+				} else {
+					LOGGER.error("本地应用已断开 port={}", dataWrapper.getClientProxyPort());
+					if (localAppCtx != null) {
+						localAppCtxMap.remove(Util.getLocalPort(localAppCtx));
+						localAppCtx.close();
+					}
+					super.putForwarderData(
+							new DataWrapper(null, StatusCode.C_APP_CLOSE, null, dataWrapper.getClientProxyPort()));
 				}
-				this.localAppCtx.writeAndFlush(dataWrapper.getData());
-				System.out.println(System.currentTimeMillis() - dataWrapper.getCreateTime());
-			} else if (dataWrapper.getDataType() == DataType.SERVER_PROXY_NOT_FOUNED) {
+			} else if (dataWrapper.getStatusCode() == StatusCode.S_NOT_FOUND) {
 				LOGGER.error("服务端代理未找到");
 				ctx.close();
 				super.close();
-			} else if (dataWrapper.getDataType() == DataType.Server_PROXY_ERROR) {
-				LOGGER.error("服务端代理已断开");
+			} else if (dataWrapper.getStatusCode() == StatusCode.S_ERROR) {
+				LOGGER.error("服务端代理错误，已断开");
 				if (ctx != null) {
 					ctx.close();
 				}
 			}
 		} else if (msg instanceof ByteBuf) {
-			lastSendDataTime = System.currentTimeMillis();
-			localAppCtx = ctx;
-			super.put(new DataWrapperBuilder().setData((ByteBuf) msg).setClientType(ClientType.ClientProxy)
-					.setDataType(DataType.DATA).create());
+			int localPort = Util.getLocalPort(ctx);
+			ChannelHandlerContext context = localAppCtxMap.get(localPort);
+			if (context!=null && context!=ctx) {
+				ctx.close();
+			}
+			if (context==null) {
+				LOGGER.info("本地应用已连接 port={}",localPort);
+			}
+			localAppCtxMap.putIfAbsent(localPort, ctx);
+			// channelid由forwarder设置
+			super.putForwarderData(new DataWrapper(null, StatusCode.C_DATA, msg, localPort));
 		}
 
 	}
 
-	public class LocalServer extends AbstractServer {
-		@Override
-		public void start() {
-			super.start();
-			LOGGER.info("链接远程代理服务器成功  客户端代理服务启动,本地应用请链接 127.0.0.1:{}", Config.getConfig().getClientProxyPort());
-		}
-
-		@Override
-		protected ChannelInitializer<Channel> getChildHandler() {
-			return new ChannelInitializer<Channel>() {
-				@Override
-				protected void initChannel(Channel ch) throws Exception {
-					ch.pipeline().addLast(handler);
-				}
-			};
-		}
-
-		@Override
-		protected int getPort() {
-			return Config.getConfig().getClientProxyPort();
-		}
-	}
-
-	@Override
-	protected ClientType getClientType() {
-		return ClientType.ClientProxy;
-	}
 }

@@ -30,17 +30,12 @@ public class ForwarderServer extends AbstractServer {
 		};
 	}
 
-	@Override
-	public void start() {
-		this.run();
-	}
-
 	public static void main(String[] args) throws Exception {
 		new ForwarderServer().start();
 	}
 
 	@Override
-	protected int getPort() {
-		return Config.getConfig().getForwaderPort();
+	protected int[] getPort() {
+		return new int[] { Config.getConfig().getForwaderPort() };
 	}
 }

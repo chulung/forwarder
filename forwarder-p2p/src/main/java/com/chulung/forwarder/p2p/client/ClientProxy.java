@@ -22,7 +22,6 @@ public class ClientProxy {
               .channel(NioDatagramChannel.class)
               .option(ChannelOption.SO_BROADCAST, true)
               .handler(new EchoClientHandler());
-             
              b.bind(port).sync().channel().closeFuture().await();
          } catch (Exception e) {
              e.printStackTrace();

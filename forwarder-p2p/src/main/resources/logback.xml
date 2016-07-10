@@ -3,7 +3,7 @@
 	debug：当此属性设置为true时，将打印出logback内部日志信息，实时查看logback运行状态。默认值为false。 -->
 <configuration scan="false" scanPeriod="60 seconds" debug="false">
 	<!-- 定义日志的根目录 -->
-	<property name="LOG_HOME" value="/forwarder-p2p/logs/log" />
+	<property name="LOG_HOME" value="logs/log" />
 	<!-- 定义日志文件名称 -->
 	<property name="appName" value="forwarder-p2p"></property>
 	<!-- ch.qos.logback.core.ConsoleAppender 表示控制台输出 -->

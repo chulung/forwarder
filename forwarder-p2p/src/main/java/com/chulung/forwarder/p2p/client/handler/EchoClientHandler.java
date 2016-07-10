@@ -36,6 +36,9 @@ public class EchoClientHandler extends SimpleChannelInboundHandler<DatagramPacke
 		System.out.println("客户端向服务器发送自己的IP和PORT");
 		ctx.writeAndFlush(
 				new DatagramPacket(Unpooled.copiedBuffer("L".getBytes()), new InetSocketAddress("112.124.127.23", 7777)));
+		System.out.println("客户端向服务器发送M");
+		ctx.writeAndFlush(
+				new DatagramPacket(Unpooled.copiedBuffer("M".getBytes()), new InetSocketAddress("112.124.127.23", 7777)));
 		super.channelActive(ctx);
 	}
 }

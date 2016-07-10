@@ -2,46 +2,36 @@ package com.chulung.forwarder.wrapper;
 
 import java.io.Serializable;
 
-import com.chulung.forwarder.common.ClientType;
-import com.chulung.forwarder.common.DataType;
-
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 
 public class DataWrapper implements Serializable {
 	private static final long serialVersionUID = 1178533155322062994L;
-	private long createTime =System.currentTimeMillis();
 	private String clientId;
-	private ClientType clientType;
-	private DataType dataType;
-	private byte[] data;
-	private String msg;
+	private int statusCode;
+	private Object data;
+	private int clientProxyPort;
 
-	@Override
-	public String toString() {
-		return "DataWrapper [clientId=" + clientId + ", clientType=" + clientType + ", dataType=" + dataType + ", data="
-				+ (data == null ? null : data) + ", msg=" + msg + "]";
+	public DataWrapper(String clientId, int statusCode, Object data, int clientProxyPort) {
+		if (data != null) {
+			assert data instanceof ByteBuf;
+			this.data = ByteBufUtil.getBytes((ByteBuf) data);
+		}
+		this.clientId = clientId;
+		this.statusCode = statusCode;
+		this.clientProxyPort = clientProxyPort;
 	}
 
-	public ClientType getClientType() {
-		return clientType;
+	public DataWrapper() {
 	}
 
-	public void setClientType(ClientType clientType) {
-		this.clientType = clientType;
-	}
-
-	public DataType getDataType() {
-		return dataType;
-	}
-
-	public void setDataType(DataType dataType) {
-		this.dataType = dataType;
+	public void setData(byte[] data) {
+		this.data = data;
 	}
 
 	public ByteBuf getData() {
-		return Unpooled.wrappedBuffer(data);
+		return Unpooled.wrappedBuffer((byte[]) data);
 	}
 
 	public String getClientId() {
@@ -56,20 +46,20 @@ public class DataWrapper implements Serializable {
 		this.data = ByteBufUtil.getBytes(data);
 	}
 
-	public String getMsg() {
-		return msg;
+	public int getStatusCode() {
+		return statusCode;
 	}
 
-	public void setMsg(String msg) {
-		this.msg = msg;
+	public void setStatus(int statusCode) {
+		this.statusCode = statusCode;
 	}
 
-	public long getCreateTime() {
-		return createTime;
+	public int getClientProxyPort() {
+		return clientProxyPort;
 	}
 
-	public void setCreateTime(long createTime) {
-		this.createTime = createTime;
+	public void setClientProxyPort(int clientProxyPort) {
+		this.clientProxyPort = clientProxyPort;
 	}
 
 }

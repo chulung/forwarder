@@ -63,7 +63,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>com.chulung.forwarder.server.ForwarderServer</mainClass>
+							<mainClass>com.chulung.forwarder.MainClass</mainClass>
 							<addClasspath>true</addClasspath>
 						</manifest>
 					</archive>
@@ -86,7 +86,7 @@
 					</descriptors>
 					<archive>
 						<manifest>
-							<mainClass>com.chulung.forwarder.server.ForwarderServer</mainClass>
+							<mainClass>com.chulung.forwarder.MainClass</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
