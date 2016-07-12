@@ -12,32 +12,29 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
-public abstract class AbstractProxy implements Runnable {
+public abstract class AbstractProxy {
 	protected final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
-	protected EventLoopGroup group = new NioEventLoopGroup();
 
-	public void run() {
+	public void startBoot(InetSocketAddress inetSocketAddress) {
+		EventLoopGroup group = new NioEventLoopGroup();
 		try {
-			LOGGER.info("新代理已启动，address={}",getRemoteAddress());
+			LOGGER.info("新代理已启动，address={}", inetSocketAddress);
 			Bootstrap b = new Bootstrap();
-			b.group(group).channel(NioSocketChannel.class).remoteAddress(getRemoteAddress())
+			b.group(group).channel(NioSocketChannel.class).remoteAddress(inetSocketAddress)
 					.handler(getChannelInitializer());
 			ChannelFuture f = b.connect().sync();
 			f.channel().closeFuture().sync();
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+			this.LOGGER.error("", e);
 		} finally {
 			try {
 				group.shutdownGracefully().sync();
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				this.LOGGER.error("", e);
 			}
 		}
 	}
 
 	protected abstract ChannelHandler getChannelInitializer();
 
-	protected abstract InetSocketAddress getRemoteAddress();
-
-	protected abstract ChannelHandler getProxyHandler();
 }

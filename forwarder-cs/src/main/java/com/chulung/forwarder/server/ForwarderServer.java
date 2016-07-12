@@ -18,6 +18,14 @@ import io.netty.channel.ChannelInitializer;
 public class ForwarderServer extends AbstractServer {
 	private ForwarderServerHandler forwarderServerHandler = new ForwarderServerHandler();
 
+	public void startSync() {
+		this.startServerSync(Config.getInstance().getForwaderChannelPort());
+	}
+
+	public void startAsync() {
+		this.startServerAsync(Config.getInstance().getForwaderChannelPort());
+	}
+
 	@Override
 	public ChannelInitializer<Channel> getChildHandler() {
 		return new ChannelInitializer<Channel>() {
@@ -31,11 +39,7 @@ public class ForwarderServer extends AbstractServer {
 	}
 
 	public static void main(String[] args) throws Exception {
-		new ForwarderServer().start();
+		new ForwarderServer().startSync();
 	}
 
-	@Override
-	protected int[] getPort() {
-		return new int[] { Config.getConfig().getForwaderPort() };
-	}
 }

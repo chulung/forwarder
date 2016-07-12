@@ -15,21 +15,9 @@ import io.netty.channel.socket.SocketChannel;
 public class ServerProxy extends AbstractProxy {
 	private ServerProxyHandler serverProxyHandler = new ServerProxyHandler();
 
-	public ServerProxy() {
-	}
-
-	public static void main(String[] args) throws Exception {
-		new ServerProxy().run();
-	}
-
-	@Override
-	public ChannelHandler getProxyHandler() {
-		return serverProxyHandler;
-	}
-
-	@Override
-	protected InetSocketAddress getRemoteAddress() {
-		return Config.getConfig().getForwarderAddress();
+	public void startSync() {
+		startBoot(new InetSocketAddress(Config.getInstance().getForwarderHost(),
+				Config.getInstance().getForwaderChannelPort()));
 	}
 
 	@Override
@@ -39,7 +27,7 @@ public class ServerProxy extends AbstractProxy {
 			protected void initChannel(SocketChannel ch) throws Exception {
 				ch.pipeline().addLast(new KryoEncoder(KryoPool.getInstance()));
 				ch.pipeline().addLast(new KryoDecoder(KryoPool.getInstance()));
-				ch.pipeline().addLast(getProxyHandler());
+				ch.pipeline().addLast(serverProxyHandler);
 			}
 		};
 	}

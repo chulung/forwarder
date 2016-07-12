@@ -13,6 +13,11 @@ public class DataWrapper implements Serializable {
 	private Object data;
 	private int clientProxyPort;
 
+	public DataWrapper(int statusCode) {
+		super();
+		this.statusCode = statusCode;
+	}
+
 	public DataWrapper(String clientId, int statusCode, Object data, int clientProxyPort) {
 		if (data != null) {
 			assert data instanceof ByteBuf;
@@ -24,6 +29,11 @@ public class DataWrapper implements Serializable {
 	}
 
 	public DataWrapper() {
+	}
+
+	public DataWrapper(String clientId, int statusCode) {
+		this.clientId=clientId;
+		this.statusCode=statusCode;
 	}
 
 	public void setData(byte[] data) {

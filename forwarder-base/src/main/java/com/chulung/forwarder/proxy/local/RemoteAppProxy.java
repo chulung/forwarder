@@ -5,35 +5,27 @@ import java.net.InetSocketAddress;
 import com.chulung.forwarder.common.Config;
 import com.chulung.forwarder.common.StatusCode;
 import com.chulung.forwarder.proxy.AbstractProxy;
-import com.chulung.forwarder.proxy.handler.ServerProxyHandler;
+import com.chulung.forwarder.proxy.AbstractServerProxyHandler;
 import com.chulung.forwarder.wrapper.DataWrapper;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.SocketChannel;
 
-public class RemoteAppProxy extends AbstractProxy {
+public class RemoteAppProxy extends AbstractProxy implements Runnable {
 	private DataWrapper firstData;
-	private ServerProxyHandler serverProxyHandler;
+	private AbstractServerProxyHandler serverProxyHandler;
 	private String clientId;
+	private LocalServerHandler localServerHandler = new LocalServerHandler();
 
-	public RemoteAppProxy(DataWrapper dw, ServerProxyHandler serverProxyHandler) {
+	public RemoteAppProxy(DataWrapper dw, AbstractServerProxyHandler serverProxyHandler) {
 		this.firstData = dw;
 		this.serverProxyHandler = serverProxyHandler;
 		clientId = firstData.getClientId();
-	}
-
-	@Override
-	public ChannelHandler getProxyHandler() {
-		return new localServerHandler();
-	}
-
-	@Override
-	protected InetSocketAddress getRemoteAddress() {
-		return new InetSocketAddress(Config.getConfig().getMappedPort(firstData.getClientProxyPort()));
 	}
 
 	@Override
@@ -41,23 +33,24 @@ public class RemoteAppProxy extends AbstractProxy {
 		return new ChannelInitializer<SocketChannel>() {
 			@Override
 			protected void initChannel(SocketChannel ch) throws Exception {
-				ch.pipeline().addLast(getProxyHandler());
+				ch.pipeline().addLast(localServerHandler);
 			}
 		};
 	}
 
-	public class localServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
+	@Sharable
+	public class LocalServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
 		@Override
 		public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
 			serverProxyHandler.delelteRemoteAppProxyCtx(clientId);
 		}
 
-		public localServerHandler() {
+		public LocalServerHandler() {
 		}
 
 		@Override
 		public void channelActive(ChannelHandlerContext ctx) throws Exception {
-			LOGGER.info("clientId={} port={}",firstData.getClientId() ,firstData.getClientProxyPort());
+			LOGGER.info("clientId={} port={}", firstData.getClientId(), firstData.getClientProxyPort());
 			serverProxyHandler.putRemoteAppProxyCtx(firstData.getClientId() + firstData.getClientProxyPort(), ctx);
 			ctx.writeAndFlush(firstData.getData());
 		}
@@ -69,5 +62,10 @@ public class RemoteAppProxy extends AbstractProxy {
 					new DataWrapper(clientId, StatusCode.S_DATA, data, firstData.getClientProxyPort()));
 		}
 
+	}
+
+	@Override
+	public void run() {
+		startBoot(new InetSocketAddress(Config.getInstance().getPortsMap().get(firstData.getClientProxyPort())));
 	}
 }
