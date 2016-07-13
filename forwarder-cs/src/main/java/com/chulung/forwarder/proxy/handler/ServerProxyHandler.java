@@ -17,14 +17,6 @@ public class ServerProxyHandler extends AbstractServerProxyHandler {
 		ctx.writeAndFlush(new DataWrapper(StatusCode.S_CONNECTING));
 	}
 
-	public void putForwarderData(DataWrapper create) {
-		try {
-			this.forwardDataQueue.transfer(create);
-		} catch (InterruptedException e) {
-		}
-
-	}
-
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
 		if (msg == null) {

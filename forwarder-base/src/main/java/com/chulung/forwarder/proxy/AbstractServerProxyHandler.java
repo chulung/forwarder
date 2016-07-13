@@ -87,4 +87,13 @@ public abstract class AbstractServerProxyHandler extends SimpleChannelInboundHan
 			delelteRemoteAppProxyCtx(dw.getClientId() + dw.getClientProxyPort());
 		}
 	}
+
+	public void putForwarderData(DataWrapper create) {
+		try {
+			this.forwardDataQueue.transfer(create);
+		} catch (InterruptedException e) {
+		}
+
+	}
+
 }

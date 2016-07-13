@@ -8,7 +8,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.DatagramPacket;
 
-public class P2pServerHandler extends SimpleChannelInboundHandler<DatagramPacket> {
+public class TrackerServerHandler extends SimpleChannelInboundHandler<DatagramPacket> {
 	boolean flag = false;
 	InetSocketAddress addr1 = null;
 	InetSocketAddress addr2 = null;

@@ -9,18 +9,17 @@ import io.netty.buffer.Unpooled;
 public class DataWrapper implements Serializable {
 	private static final long serialVersionUID = 1178533155322062994L;
 	private String clientId;
+	private int clientProxyPort;
 	private int statusCode;
 	private Object data;
-	private int clientProxyPort;
 
 	public DataWrapper(int statusCode) {
 		super();
 		this.statusCode = statusCode;
 	}
 
-	public DataWrapper(String clientId, int statusCode, Object data, int clientProxyPort) {
+	public DataWrapper(String clientId, int statusCode, ByteBuf data, int clientProxyPort) {
 		if (data != null) {
-			assert data instanceof ByteBuf;
 			this.data = ByteBufUtil.getBytes((ByteBuf) data);
 		}
 		this.clientId = clientId;
@@ -32,8 +31,8 @@ public class DataWrapper implements Serializable {
 	}
 
 	public DataWrapper(String clientId, int statusCode) {
-		this.clientId=clientId;
-		this.statusCode=statusCode;
+		this.clientId = clientId;
+		this.statusCode = statusCode;
 	}
 
 	public void setData(byte[] data) {
@@ -53,7 +52,9 @@ public class DataWrapper implements Serializable {
 	}
 
 	public void setData(ByteBuf data) {
-		this.data = ByteBufUtil.getBytes(data);
+		if (data != null) {
+			this.data = ByteBufUtil.getBytes(data);
+		}
 	}
 
 	public int getStatusCode() {

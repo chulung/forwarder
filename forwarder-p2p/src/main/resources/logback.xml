@@ -5,7 +5,7 @@
 	<!-- 定义日志的根目录 -->
 	<property name="LOG_HOME" value="logs/log" />
 	<!-- 定义日志文件名称 -->
-	<property name="appName" value="forwarder-p2p"></property>
+	<property name="appName" value="forwarder"></property>
 	<!-- ch.qos.logback.core.ConsoleAppender 表示控制台输出 -->
 	<appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
 		<Encoding>UTF-8</Encoding>
