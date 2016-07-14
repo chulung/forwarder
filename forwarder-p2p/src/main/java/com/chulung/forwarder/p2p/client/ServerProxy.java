@@ -1,6 +1,6 @@
 package com.chulung.forwarder.p2p.client;
 
-import com.chulung.forwarder.p2p.client.handler.EchoClientHandler2;
+import com.chulung.forwarder.p2p.client.handler.ServerProxyHandler;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelOption;
@@ -14,9 +14,8 @@ public class ServerProxy {
 		EventLoopGroup group = new NioEventLoopGroup();
 		try {
 			b.group(group).channel(NioDatagramChannel.class).option(ChannelOption.SO_BROADCAST, true)
-					.handler(new EchoClientHandler2());
-
-			b.bind(7779).sync().channel().closeFuture().await();
+					.handler(new ServerProxyHandler());
+			b.bind(7119).sync().channel().closeFuture().await();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {

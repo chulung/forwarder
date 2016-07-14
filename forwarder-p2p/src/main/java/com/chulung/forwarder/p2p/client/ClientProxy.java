@@ -1,6 +1,7 @@
 package com.chulung.forwarder.p2p.client;
 
-import com.chulung.forwarder.p2p.client.handler.EchoClientHandler;
+import com.chulung.forwarder.Server.RemotePortMapServer;
+import com.chulung.forwarder.p2p.client.handler.ClientProxyHandler;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelOption;
@@ -9,24 +10,23 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 
 public class ClientProxy {
+	private ClientProxyHandler handler = new ClientProxyHandler();
 
-     public static void main(String[] args) {
-         int port = 7778;
-         if(args.length != 0){
-             port = Integer.parseInt(args[0]);
-         }
-         Bootstrap b = new Bootstrap();
-         EventLoopGroup group = new NioEventLoopGroup();
-         try {
-             b.group(group)
-              .channel(NioDatagramChannel.class)
-              .option(ChannelOption.SO_BROADCAST, true)
-              .handler(new EchoClientHandler());
-             b.bind(port).sync().channel().closeFuture().await();
-         } catch (Exception e) {
-             e.printStackTrace();
-         } finally{
-             group.shutdownGracefully();
-         }
-     }
+	public void startSync() {
+//		new RemotePortMapServer(handler).startServerAsync();
+		Bootstrap b = new Bootstrap();
+		EventLoopGroup group = new NioEventLoopGroup();
+		try {
+			b.group(group).channel(NioDatagramChannel.class).option(ChannelOption.SO_BROADCAST, true).handler(handler);
+			b.bind(777).sync().channel().closeFuture().await();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			group.shutdownGracefully();
+		}
+	}
+
+	public static void main(String[] args) {
+		new ClientProxy().startSync();
+	}
 }

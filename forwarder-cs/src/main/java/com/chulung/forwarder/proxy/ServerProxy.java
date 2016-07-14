@@ -31,5 +31,9 @@ public class ServerProxy extends AbstractProxy {
 			}
 		};
 	}
+	
+	public static void main(String[] args) {
+		new ServerProxy().startSync();
+	}
 
 }

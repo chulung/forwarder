@@ -15,6 +15,7 @@ public class ServerProxyHandler extends AbstractServerProxyHandler {
 		LOGGER.info("forwarderServer已连接，发送标识包");
 		this.forwarderServerCtx = ctx;
 		ctx.writeAndFlush(new DataWrapper(StatusCode.S_CONNECTING));
+		this.startForwardQueue();
 	}
 
 	@Override

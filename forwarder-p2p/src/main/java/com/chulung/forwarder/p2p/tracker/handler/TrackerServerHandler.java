@@ -1,52 +1,38 @@
 package com.chulung.forwarder.p2p.tracker.handler;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
+import com.chulung.forwarder.common.StatusCode;
+import com.chulung.forwarder.handler.AbstractDatagramPacketHandler;
+import com.chulung.forwarder.wrapper.DataWrapper;
+
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.channel.socket.DatagramPacket;
 
-public class TrackerServerHandler extends SimpleChannelInboundHandler<DatagramPacket> {
-	boolean flag = false;
-	InetSocketAddress addr1 = null;
-	InetSocketAddress addr2 = null;
+public class TrackerServerHandler extends AbstractDatagramPacketHandler {
+	private Map<String, InetSocketAddress> serverProxyAddrMap = new ConcurrentHashMap<>();
 
-	/**
-	 * channelRead0 是对每个发送过来的UDP包进行处理
-	 */
 	@Override
-	protected void channelRead0(ChannelHandlerContext ctx, DatagramPacket packet) throws Exception {
-		ByteBuf buf = (ByteBuf) packet.copy().content();
-		byte[] req = new byte[buf.readableBytes()];
-		buf.readBytes(req);
-		String str = new String(req, "UTF-8");
-		if (str.equalsIgnoreCase("L")) {
-			// 保存到addr1中 并发送addr2
-			addr1 = packet.sender();
-			System.out.println("L 命令， 保存到addr1中 ");
-		} else if (str.equalsIgnoreCase("R")) {
-			// 保存到addr2中 并发送addr1
-			addr2 = packet.sender();
-			System.out.println("R 命令， 保存到addr2中 ");
-		} else if (str.equalsIgnoreCase("M")) {
-			// addr1 -> addr2
-			String remot = "A " + addr2.getAddress().toString().replace("/", "") + " " + addr2.getPort();
-			ctx.writeAndFlush(new DatagramPacket(Unpooled.copiedBuffer(remot.getBytes()), addr1));
-			// addr2 -> addr1
-			remot = "A " + addr1.getAddress().toString().replace("/", "") + " " + addr1.getPort();
-			ctx.writeAndFlush(new DatagramPacket(Unpooled.copiedBuffer(remot.getBytes()), addr2));
-			System.out.println("M 命令");
+	protected void readDataWarpper(ChannelHandlerContext ctx, DataWrapper dw, InetSocketAddress sender)
+			throws IOException {
+		switch (dw.getStatusCode()) {
+		case StatusCode.S_CONNECTING:
+			LOGGER.info("收到serverProxy 注册信息　addr={} id={}", sender,dw.getClientId());
+			this.serverProxyAddrMap.put(dw.getClientId(), sender);
+			writeAndFlush(ctx, new DataWrapper(StatusCode.S_CONNECTING), sender);
+			break;
+		case StatusCode.C_GET_SADDR:
+			InetSocketAddress serverAddr = this.serverProxyAddrMap.get(dw.getClientId());
+			if (serverAddr != null) {
+				this.writeAndFlush(ctx, new DataWrapper(serverAddr, StatusCode.S_ADDR), sender);
+				this.writeAndFlush(ctx, new DataWrapper(sender, StatusCode.C_ADDR), serverAddr);
+			}
+			break;
+		default:
+			break;
 		}
-
-	}
-
-	@Override
-	public void channelActive(ChannelHandlerContext ctx) throws Exception {
-		System.out.println("服务器启动...");
-
-		super.channelActive(ctx);
 	}
 
 }

@@ -84,7 +84,7 @@ public class ForwarderServerHandler extends SimpleChannelInboundHandler<Object> 
 		}
 		ChannelHandlerContext clientCtx = this.clientProxyCtxMap.get(msg.getClientId());
 		if (clientCtx != null) {
-			clientCtx.writeAndFlush(msg);
+			clientCtx.writeAndFlush(msg.getData());
 		} else {
 			// 远程客户端丢失，通知远程服务端代理抛弃对应通道
 			LOGGER.error("远程客户端丢失 ClientId={}", msg.getClientId());

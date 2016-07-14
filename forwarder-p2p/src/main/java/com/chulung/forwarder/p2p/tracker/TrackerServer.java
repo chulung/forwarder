@@ -26,6 +26,6 @@ public class TrackerServer {
 	}
 
 	public static void main(String[] args) {
-
+		new TrackerServer().start();
 	}
 }

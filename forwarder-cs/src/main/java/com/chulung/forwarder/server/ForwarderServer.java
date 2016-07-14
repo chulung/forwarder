@@ -1,5 +1,7 @@
 package com.chulung.forwarder.server;
 
+import com.chulung.forwarder.Server.AbstractServer;
+import com.chulung.forwarder.Server.RemotePortMapServer;
 import com.chulung.forwarder.codec.KryoDecoder;
 import com.chulung.forwarder.codec.KryoEncoder;
 import com.chulung.forwarder.codec.KryoPool;
@@ -19,6 +21,7 @@ public class ForwarderServer extends AbstractServer {
 	private ForwarderServerHandler forwarderServerHandler = new ForwarderServerHandler();
 
 	public void startSync() {
+		new RemotePortMapServer(forwarderServerHandler).startServerAsync();
 		this.startServerSync(Config.getInstance().getForwaderChannelPort());
 	}
 
