@@ -1,6 +1,7 @@
 package com.chulung.forwarder.wrapper;
 
 import java.io.Serializable;
+import java.net.InetSocketAddress;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
@@ -9,7 +10,8 @@ import io.netty.buffer.Unpooled;
 public class DataWrapper implements Serializable {
 	private static final long serialVersionUID = 1178533155322062994L;
 	private String clientId;
-	private int clientProxyPort;
+	private int port;
+	private String addr;
 	private int statusCode;
 	private Object data;
 
@@ -24,10 +26,17 @@ public class DataWrapper implements Serializable {
 		}
 		this.clientId = clientId;
 		this.statusCode = statusCode;
-		this.clientProxyPort = clientProxyPort;
+		this.port = clientProxyPort;
 	}
 
 	public DataWrapper() {
+	}
+
+	public DataWrapper(InetSocketAddress addr, int statusCode) {
+		super();
+		this.port = addr.getPort();
+		this.addr = addr.getHostName();
+		this.statusCode = statusCode;
 	}
 
 	public DataWrapper(String clientId, int statusCode) {
@@ -66,11 +75,19 @@ public class DataWrapper implements Serializable {
 	}
 
 	public int getClientProxyPort() {
-		return clientProxyPort;
+		return port;
 	}
 
 	public void setClientProxyPort(int clientProxyPort) {
-		this.clientProxyPort = clientProxyPort;
+		this.port = clientProxyPort;
+	}
+
+	public String getAddr() {
+		return addr;
+	}
+
+	public void setAddr(String addr) {
+		this.addr = addr;
 	}
 
 }
