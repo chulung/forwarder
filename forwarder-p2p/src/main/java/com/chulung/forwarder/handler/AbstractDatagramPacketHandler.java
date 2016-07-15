@@ -27,20 +27,22 @@ public abstract class AbstractDatagramPacketHandler extends AbstractServerProxyH
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
 		if (msg instanceof DatagramPacket) {
-			 Object obj = null;      
-		        try {        
-		            ByteArrayInputStream bis = new ByteArrayInputStream (ByteBufUtil.getBytes(((DatagramPacket) msg).content()));        
-		            ObjectInputStream ois = new ObjectInputStream (bis);        
-		            obj = ois.readObject();      
-		            ois.close();   
-		            bis.close();   
-		        } catch (IOException ex) {        
-		            ex.printStackTrace();   
-		        } catch (ClassNotFoundException ex) {        
-		            ex.printStackTrace();   
-		        }      
-//			readDataWarpper(ctx, (DataWrapper) kryoPool.decode(((DatagramPacket) msg).content()));
-			readDataWarpper(ctx, (DataWrapper) obj,((DatagramPacket) msg).sender());
+			Object obj = null;
+			try {
+				ByteArrayInputStream bis = new ByteArrayInputStream(
+						ByteBufUtil.getBytes(((DatagramPacket) msg).content()));
+				ObjectInputStream ois = new ObjectInputStream(bis);
+				obj = ois.readObject();
+				ois.close();
+				bis.close();
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			} catch (ClassNotFoundException ex) {
+				ex.printStackTrace();
+			}
+			// readDataWarpper(ctx, (DataWrapper)
+			// kryoPool.decode(((DatagramPacket) msg).content()));
+			readDataWarpper(ctx, (DataWrapper) obj, ((DatagramPacket) msg).sender());
 		} else {
 			readLocalAppBuf(ctx, (ByteBuf) msg);
 		}
@@ -69,5 +71,6 @@ public abstract class AbstractDatagramPacketHandler extends AbstractServerProxyH
 		return ctx.writeAndFlush(new DatagramPacket(data, address));
 	}
 
-	protected abstract void readDataWarpper(ChannelHandlerContext ctx, DataWrapper dw, InetSocketAddress inetSocketAddress) throws IOException;
+	protected abstract void readDataWarpper(ChannelHandlerContext ctx, DataWrapper dw,
+			InetSocketAddress inetSocketAddress) throws IOException;
 }

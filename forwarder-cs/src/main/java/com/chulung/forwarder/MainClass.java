@@ -1,8 +1,5 @@
 package com.chulung.forwarder;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.chulung.forwarder.proxy.ServerProxy;
 import com.chulung.forwarder.server.ForwarderServer;
 

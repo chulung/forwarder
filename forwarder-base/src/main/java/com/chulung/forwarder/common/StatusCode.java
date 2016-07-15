@@ -8,7 +8,7 @@ public class StatusCode {
 	public static final int C_CONNECTING = 104;
 	/** 客户端地址信息 */
 	public static final int C_ADDR = 105;
-	/**客户端获取server地址请求*/
+	/** 客户端获取server地址请求 */
 	public static final int C_GET_SADDR = 106;
 	/** 服务端代理连接 */
 	public static final int S_CONNECTING = 201;
