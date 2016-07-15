@@ -19,7 +19,7 @@ public class TrackerServerHandler extends AbstractDatagramPacketHandler {
 			throws IOException {
 		switch (dw.getStatusCode()) {
 		case StatusCode.S_CONNECTING:
-			LOGGER.info("收到serverProxy 注册信息　addr={} id={}", sender, dw.getClientId());
+			LOGGER.info("收到serverProxy 注册信息　addr={} id={}", sender,dw.getClientId());
 			this.serverProxyAddrMap.put(dw.getClientId(), sender);
 			writeAndFlush(ctx, new DataWrapper(StatusCode.S_CONNECTING), sender);
 			break;

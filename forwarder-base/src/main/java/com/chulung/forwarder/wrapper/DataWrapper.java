@@ -1,14 +1,12 @@
 package com.chulung.forwarder.wrapper;
 
-import java.io.Serializable;
 import java.net.InetSocketAddress;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 
-public class DataWrapper implements Serializable {
-	private static final long serialVersionUID = 1178533155322062994L;
+public class DataWrapper {
 	private String clientId;
 	private int port;
 	private String addr;
