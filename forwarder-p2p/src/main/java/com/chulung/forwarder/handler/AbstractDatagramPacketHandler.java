@@ -30,7 +30,7 @@ public abstract class AbstractDatagramPacketHandler extends AbstractServerProxyH
 		}
 	}
 
-	protected void readLocalAppBuf(ChannelHandlerContext ctx, ByteBuf msg) {
+	protected void readLocalAppBuf(ChannelHandlerContext ctx, ByteBuf msg) throws IOException {
 
 	}
 

@@ -1,5 +1,6 @@
 package com.chulung.forwarder.p2p.client;
 
+import com.chulung.forwarder.Server.RemotePortMapServer;
 import com.chulung.forwarder.p2p.client.handler.ClientProxyHandler;
 
 import io.netty.bootstrap.Bootstrap;
@@ -12,7 +13,7 @@ public class ClientProxy {
 	private ClientProxyHandler handler = new ClientProxyHandler();
 
 	public void startSync() {
-//		new RemotePortMapServer(handler).startServerAsync();
+		new RemotePortMapServer(handler).startServerAsync();
 		Bootstrap b = new Bootstrap();
 		EventLoopGroup group = new NioEventLoopGroup();
 		try {

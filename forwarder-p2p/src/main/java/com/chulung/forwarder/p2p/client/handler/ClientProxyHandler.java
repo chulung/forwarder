@@ -4,18 +4,23 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 
 import com.chulung.forwarder.common.StatusCode;
-import com.chulung.forwarder.p2p.client.AbstractProxy;
+import com.chulung.forwarder.p2p.client.AbstractP2PProxy;
 import com.chulung.forwarder.wrapper.DataWrapper;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 
-public class ClientProxyHandler extends AbstractProxy {
+public class ClientProxyHandler extends AbstractP2PProxy {
 
 	private InetSocketAddress serverInetCocketAddress;
 
 	@Override
-	protected void readLocalAppBuf(ChannelHandlerContext ctx, ByteBuf msg) {
+	protected void readLocalAppBuf(ChannelHandlerContext ctx, ByteBuf msg) throws IOException {
+		if (serverInetCocketAddress == null) {
+			ctx.close();
+		}
+		writeAndFlush(forwarderServerCtx, new DataWrapper(ctx.channel().id().asLongText(), StatusCode.C_DATA),
+				serverInetCocketAddress);
 	}
 
 	@Override
@@ -23,26 +28,11 @@ public class ClientProxyHandler extends AbstractProxy {
 			throws IOException {
 		switch (dw.getStatusCode()) {
 		case StatusCode.S_ADDR:
-			if (serverInetCocketAddress!=null) {
+			if (serverInetCocketAddress != null) {
 				return;
 			}
 			this.registering = false;
 			this.serverInetCocketAddress = new InetSocketAddress(dw.getAddr(), dw.getClientProxyPort());
-			LOGGER.info("获取到server addr={},开始推送数据",serverInetCocketAddress);
-			new Thread(() -> {
-				while (true) {
-					try {
-						Thread.sleep(1000);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-					try {
-						writeAndFlush(ctx, new DataWrapper("", StatusCode.C_DATA), serverInetCocketAddress);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-			}).start();
 			break;
 		default:
 			break;

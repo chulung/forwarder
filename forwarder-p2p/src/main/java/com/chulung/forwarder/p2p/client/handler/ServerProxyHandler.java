@@ -4,12 +4,12 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 
 import com.chulung.forwarder.common.StatusCode;
-import com.chulung.forwarder.p2p.client.AbstractProxy;
+import com.chulung.forwarder.p2p.client.AbstractP2PProxy;
 import com.chulung.forwarder.wrapper.DataWrapper;
 
 import io.netty.channel.ChannelHandlerContext;
 
-public class ServerProxyHandler extends AbstractProxy {
+public class ServerProxyHandler extends AbstractP2PProxy {
 
 	@Override
 	protected void readDataWarpper(ChannelHandlerContext ctx, DataWrapper dw, InetSocketAddress sender)
@@ -20,7 +20,7 @@ public class ServerProxyHandler extends AbstractProxy {
 			this.registering = false;
 			break;
 		case StatusCode.C_DATA:
-			LOGGER.info("收到client 数据。。。");
+			handlerDataWrapper(dw);
 			break;
 		default:
 			break;
