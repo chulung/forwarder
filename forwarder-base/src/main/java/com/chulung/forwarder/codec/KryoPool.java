@@ -31,6 +31,7 @@ public class KryoPool {
 
 	public void encode(final ByteBuf out, final Object message) throws IOException {
 		ByteBufOutputStream bout = new ByteBufOutputStream(out);
+		//这里比较坑，原作者编码写入了一个4字节的占位符，解码的时候又没有处理，导致解码一直失败，折腾了我好几天，debug无数次
 		bout.write(LENGTH_PLACEHOLDER);
 		KryoSerialization kryoSerialization = new KryoSerialization(kyroFactory);
 		kryoSerialization.serialize(bout, message);
