@@ -12,7 +12,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 
 /**
- * 转发服务端
+ * 中转服务端
  * 
  * @author ChuKai
  *

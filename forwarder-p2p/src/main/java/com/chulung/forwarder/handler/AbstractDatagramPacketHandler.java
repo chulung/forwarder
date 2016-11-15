@@ -23,6 +23,7 @@ public abstract class AbstractDatagramPacketHandler extends AbstractServerProxyH
 	protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
 		if (msg instanceof DatagramPacket) {
 			ByteBuf buf = ((DatagramPacket) msg).content();
+			//FIXME keyoDecoder写入了一个4字节长度占位符，这里手动解码需要抛弃前4位，在这里处理不严谨
 			buf.readBytes(new byte[4]);
 			readDataWarpper(ctx, (DataWrapper) kryoPool.decode(buf), ((DatagramPacket) msg).sender());
 		} else {

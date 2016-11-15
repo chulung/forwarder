@@ -16,7 +16,14 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.SocketChannel;
 
+/**
+ * 远程应用代理，由它代替客户端应用向应用服务器发起请求，
+ * 同时将应用服务器的响应回传给中转服务器，再由中转服务器响应给客户端应用
+ */
 public class RemoteAppProxy extends AbstractProxy implements Runnable {
+	/**
+	 * 第一个数据包将用来建立连接，同时也包含客户端应用的地址等信息
+	 */
 	private DataWrapper firstData;
 	private AbstractServerProxyHandler serverProxyHandler;
 	private String clientId;
